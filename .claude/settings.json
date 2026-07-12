@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Process -FilePath \"powershell\" -Verb RunAs -ArgumentList \"-NoProfile\",\"-Command\",\"Start-Service -Name 'postgresql-x64-16'\" -Wait; Start-Sleep -Seconds 3; Get-Service -Name \"postgresql-x64-16\" | Select-Object Name,Status; Write-Output \"=== Port 5432 now ===\"; \\(Test-NetConnection -ComputerName localhost -Port 5432 -WarningAction SilentlyContinue\\).TcpTestSucceeded)"
+    ]
+  }
+}
