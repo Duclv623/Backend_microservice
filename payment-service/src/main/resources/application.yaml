@@ -16,3 +16,10 @@ spring:
 
 server:
   port: 8084
+
+services:
+  order:
+    url: http://localhost:8083
+
+payment:
+  public-url: http://localhost:8084
