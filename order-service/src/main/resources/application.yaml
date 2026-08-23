@@ -15,3 +15,7 @@ spring:
     show-sql: true
 server:
   port: 8083
+
+services:
+  product:
+    url: http://localhost:8082
