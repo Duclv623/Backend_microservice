@@ -17,6 +17,7 @@ import payment_service.exception.BusinessException;
 import payment_service.exception.ResourceNotFoundException;
 import payment_service.mapper.PaymentMapper;
 import payment_service.processor.PaymentProcessor;
+import payment_service.processor.PaymentProcessorFactory;
 import payment_service.repository.PaymentRepository;
 import payment_service.service.OrderClient;
 import payment_service.service.PaymentService;
@@ -26,14 +27,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderClient orderClient;
-    private final PaymentProcessor paymentProcessor;
+    private final PaymentProcessorFactory paymentProcessorFactory;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               OrderClient orderClient,
-                              PaymentProcessor paymentProcessor) {
+                              PaymentProcessorFactory paymentProcessorFactory) {
         this.paymentRepository = paymentRepository;
         this.orderClient = orderClient;
-        this.paymentProcessor = paymentProcessor;
+        this.paymentProcessorFactory = paymentProcessorFactory;
     }
 
     @Override
@@ -58,6 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setCreatedAt(LocalDateTime.now());
         payment.setUpdatedAt(LocalDateTime.now());
 
+        PaymentProcessor paymentProcessor = paymentProcessorFactory.getProcessor(payment.getMethod());
         BankPaymentResult bankResult = paymentProcessor.createPayment(payment);
         payment.setTransactionCode(bankResult.getTransactionCode());
         payment.setPaymentUrl(bankResult.getPaymentUrl());
@@ -93,13 +95,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentResponse processPaymentCallback(BankCallbackRequest request) {
-        if (!paymentProcessor.verifyCallback(request)) {
-            throw new BusinessException("Invalid bank callback signature");
-        }
-
         Payment payment = paymentRepository.findByTransactionCode(request.getTransactionCode())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Payment not found with transaction code: " + request.getTransactionCode()));
+
+        PaymentProcessor paymentProcessor = paymentProcessorFactory.getProcessor(payment.getMethod());
+        if (!paymentProcessor.verifyCallback(request)) {
+            throw new BusinessException("Invalid bank callback signature");
+        }
 
         if (payment.getStatus() != PaymentStatus.CHO_THANH_TOAN) {
             return PaymentMapper.toResponse(payment);

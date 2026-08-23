@@ -55,9 +55,9 @@ public class PaymentController {
         return paymentService.processPaymentCallback(request);
     }
 
-    @PostMapping("/mock-bank/{transactionCode}")
-    public PaymentResponse simulateBankResult(@PathVariable String transactionCode,
-                                              @RequestParam Boolean success) {
+    @PostMapping("/simulate/{transactionCode}")
+    public PaymentResponse simulatePaymentResult(@PathVariable String transactionCode,
+                                                 @RequestParam Boolean success) {
         BankCallbackRequest request = new BankCallbackRequest();
         request.setTransactionCode(transactionCode);
         request.setSuccess(success);
