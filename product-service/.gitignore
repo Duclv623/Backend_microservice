@@ -30,8 +30,5 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
+.claude/
 .vscode/
-
-
-.claude
-.vscode 
