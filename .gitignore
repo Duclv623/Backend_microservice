@@ -1,3 +1,7 @@
 # Local AI and editor settings
 .claude/
 .vscode/
+
+# Frontend dependencies and build output
+node_modules/
+dist/
