@@ -52,7 +52,7 @@ public class PaymentController {
 
     @PostMapping("/callback")
     public PaymentResponse processCallback(@Valid @RequestBody BankCallbackRequest request) {
-        return paymentService.processCallback(request);
+        return paymentService.processPaymentCallback(request);
     }
 
     @PostMapping("/mock-bank/{transactionCode}")
@@ -61,7 +61,7 @@ public class PaymentController {
         BankCallbackRequest request = new BankCallbackRequest();
         request.setTransactionCode(transactionCode);
         request.setSuccess(success);
-        return paymentService.processCallback(request);
+        return paymentService.processPaymentCallback(request);
     }
 
     @PatchMapping("/{id}/cancel")
